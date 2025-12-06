@@ -7,7 +7,7 @@ module.exports = function (app) {
   function getRandomUA() {
     const file = path.join(__dirname, 'ua.txt');
     const lines = fs.readFileSync(file, 'utf-8').split('\n').map(x => x.trim()).filter(Boolean);
-    if (!lines.length) throw new Error('File ua.txt kosong');
+    if (!lines.length) throw new Error('ua.txt file is empty');
     return lines[Math.floor(Math.random() * lines.length)];
   }
 
@@ -17,8 +17,8 @@ module.exports = function (app) {
     if (!prompt) {
       return res.status(400).json({
         status: false,
-        creator: 'FlowFalcon',
-        message: 'Parameter "prompt" wajib diisi.'
+        creator: 'Chamod Nimsara',
+        message: 'The "prompt" parameter is required.'
       });
     }
 
@@ -26,11 +26,19 @@ module.exports = function (app) {
     const styleList = ['ghibli1', 'ghibli2', 'ghibli3', 'anime'];
 
     if (!rasioList.includes(rasio)) {
-      return res.status(400).json({ status: false, message: `Rasio tidak valid. Gunakan salah satu: ${rasioList.join(', ')}` });
+      return res.status(400).json({
+        status: false,
+        creator: 'Chamod Nimsara',
+        message: `Invalid ratio. Choose one of: ${rasioList.join(', ')}`
+      });
     }
 
     if (!styleList.includes(style)) {
-      return res.status(400).json({ status: false, message: `Style tidak valid. Gunakan salah satu: ${styleList.join(', ')}` });
+      return res.status(400).json({
+        status: false,
+        creator: 'Chamod Nimsara',
+        message: `Invalid style. Choose one of: ${styleList.join(', ')}`
+      });
     }
 
     try {
@@ -44,7 +52,7 @@ module.exports = function (app) {
       const headers = {
         ...form.getHeaders(),
         accept: '*/*',
-        'accept-language': 'id-ID,id;q=0.9',
+        'accept-language': 'en-US,en;q=0.9',
         authorization: '',
         origin: 'https://remaker.ai',
         'product-code': '067003',
@@ -57,7 +65,7 @@ module.exports = function (app) {
       const { data: create } = await axios.post('https://api.remaker.ai/api/pai/v4/ai-anime/create-job', form, { headers });
       const job_id = create?.result?.job_id;
 
-      if (!job_id) throw new Error('Gagal membuat job');
+      if (!job_id) throw new Error('Failed to create job');
 
       // Step 2: Poll result
       for (let i = 0; i < 20; i++) {
@@ -73,12 +81,12 @@ module.exports = function (app) {
         await new Promise(r => setTimeout(r, 2000)); // Delay polling
       }
 
-      throw new Error('Gagal mendapatkan hasil (Timeout)');
+      throw new Error('Failed to get result (Timeout)');
     } catch (err) {
       return res.status(500).json({
         status: false,
-        creator: 'FlowFalcon',
-        message: 'Gagal memproses permintaan',
+        creator: 'Chamod Nimsara',
+        message: 'Failed to process the request',
         error: err.message
       });
     }
