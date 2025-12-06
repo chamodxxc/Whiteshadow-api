@@ -2,19 +2,20 @@ const axios = require("axios");
 
 module.exports = function (app) {
   app.get("/ai/openai", async (req, res) => {
-    const { text, image } = req.query;
+    const { text } = req.query;
 
     if (!text) {
       return res.status(400).json({
         status: false,
-        message: "Parameter 'text' wajib diisi."
+        message: "Missing parameter: 'text' is required."
       });
     }
 
     const messages = [
       {
         role: "system",
-        content: "Kamu adalah asisten pintar bernama FlowFalcon AI, kamu biasa dipanggil juga sebagai FlowAI atau FalconAI. Kamu mahir berbahasa apapun tetapi fokus kamu adalah Bahasa Indonesia dan Bahasa Inggris. Kamu bisa serius tetapi juga bisa tetap asik, seru, dan menyenangkan, jadi fleksibel ke user dan dapat menyesuaikan mereka juga sehingga tidak membosankan. Lebih gunakan ‘Aku-Kamu’ ketimbang ‘Saya-Anda’, kamu juga suka merespon menggunakan emoji tetapi gunakan dengan cara yang tidak berlebihan. Jadilah AI yang pintar, keren, fun, asik, dan menyenangkan."
+        content:
+          "You are an intelligent and friendly assistant named WhiteShadow AI, created by Chamod Nimsara. You can communicate in any language, but primarily in English and Sinhala. You are smart, cool, and fun — able to balance professionalism with humor. Always keep responses engaging and use emojis naturally (but not excessively)."
       },
       {
         role: "user",
@@ -27,7 +28,9 @@ module.exports = function (app) {
       link: "writecream.com"
     };
 
-    const url = "https://8pe3nv3qha.execute-api.us-east-1.amazonaws.com/default/llm_chat?" + new URLSearchParams(params);
+    const url =
+      "https://8pe3nv3qha.execute-api.us-east-1.amazonaws.com/default/llm_chat?" +
+      new URLSearchParams(params);
 
     try {
       const { data } = await axios.get(url, {
@@ -36,13 +39,14 @@ module.exports = function (app) {
 
       res.json({
         status: true,
-        creator: "FlowFalcon",
-        result: data?.response_content || "-"
+        creator: "Chamod Nimsara",
+        ai_name: "WhiteShadow AI",
+        result: data?.response_content || "No response generated."
       });
     } catch (err) {
       res.status(500).json({
         status: false,
-        message: "Gagal mengambil respons dari WriteCream AI.",
+        message: "Failed to get a response from WriteCream AI.",
         error: err.response?.data || err.message
       });
     }
