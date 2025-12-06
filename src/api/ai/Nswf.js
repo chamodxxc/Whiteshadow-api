@@ -14,8 +14,8 @@ module.exports = function (app) {
     if (!prompt) {
       return res.status(400).json({
         status: false,
-        creator: 'FlowFalcon',
-        message: 'Parameter "prompt" wajib diisi.'
+        creator: 'Chamod Nimsara',
+        message: 'The "prompt" parameter is required.'
       });
     }
 
@@ -23,8 +23,8 @@ module.exports = function (app) {
     if (!styles.includes(style)) {
       return res.status(400).json({
         status: false,
-        creator: 'FlowFalcon',
-        message: `Style tidak valid. Pilih salah satu: ${styles.join(', ')}`
+        creator: 'Chamod Nimsara',
+        message: `Invalid style. Choose one of: ${styles.join(', ')}`
       });
     }
 
@@ -58,10 +58,10 @@ module.exports = function (app) {
         session_hash
       }, { headers, timeout: 25000 });
 
-      // Step 2: Polling max 20 detik
+      // Step 2: Polling max 20 seconds
       let resultUrl = null;
       const startTime = Date.now();
-      while (Date.now() - startTime < 20000) { // max 20 detik
+      while (Date.now() - startTime < 20000) {
         const { data: raw } = await axios.get(`${base}/gradio_api/queue/data?session_hash=${session_hash}`, {
           headers,
           timeout: 15000,
@@ -86,12 +86,12 @@ module.exports = function (app) {
       if (!resultUrl) {
         return res.status(429).json({
           status: false,
-          creator: 'FlowFalcon',
-          message: 'Limit telah tercapai, tunggu beberapa jam kedepan'
+          creator: 'Chamod Nimsara',
+          message: 'Rate limit reached. Please try again in a few hours.'
         });
       }
 
-      // Step 3: Ambil gambar
+      // Step 3: Fetch the image
       const img = await axios.get(resultUrl, {
         responseType: 'arraybuffer',
         headers
@@ -103,8 +103,8 @@ module.exports = function (app) {
     } catch (err) {
       return res.status(429).json({
         status: false,
-        creator: 'FlowFalcon',
-        message: 'Limit telah tercapai, tunggu beberapa jam kedepan'
+        creator: 'Chamod Nimsara',
+        message: 'Rate limit reached. Please try again in a few hours.'
       });
     }
   });
