@@ -10,20 +10,23 @@ async function chatBotAi(prompt, model) {
   if (!Object.keys(models).includes(model)) {
     return {
       status: false,
-      message: `Model tersedia: ${Object.keys(models).join(", ")}`
+      creator: "Chamod Nimsara",
+      message: `Available models: ${Object.keys(models).join(", ")}`
     };
   }
   try {
     const { data } = await axios.get(models[model] + encodeURIComponent(prompt));
     return {
       status: true,
+      creator: "Chamod Nimsara",
       model,
-      response: data.result
+      response: data.result || "-"
     };
   } catch (e) {
     return {
       status: false,
-      message: "Gagal mengambil respons",
+      creator: "Chamod Nimsara",
+      message: "Failed to fetch response from AI model",
       error: e.message
     };
   }
@@ -35,7 +38,8 @@ module.exports = function (app) {
     if (!prompt || !model) {
       return res.status(400).json({
         status: false,
-        message: "Parameter 'prompt' dan 'model' wajib diisi"
+        creator: "Chamod Nimsara",
+        message: "Parameters 'prompt' and 'model' are required"
       });
     }
 
