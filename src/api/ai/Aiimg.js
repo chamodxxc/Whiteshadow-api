@@ -7,7 +7,7 @@ module.exports = function (app) {
     if (!prompt) {
       return res.status(400).json({
         status: false,
-        message: "Parameter 'prompt' wajib diisi."
+        message: "Missing parameter: 'prompt' is required."
       });
     }
 
@@ -44,14 +44,14 @@ module.exports = function (app) {
     if (!styleList.includes(style)) {
       return res.status(400).json({
         status: false,
-        message: `Style tidak valid. Pilihan: ${styleList.join(", ")}`
+        message: `Invalid style. Available options: ${styleList.join(", ")}`
       });
     }
 
     if (!sizeList[size]) {
       return res.status(400).json({
         status: false,
-        message: `Size tidak valid. Pilihan: ${Object.keys(sizeList).join(", ")}`
+        message: `Invalid size. Available options: ${Object.keys(sizeList).join(", ")}`
       });
     }
 
@@ -80,7 +80,7 @@ module.exports = function (app) {
       if (!imageUrl) {
         return res.status(500).json({
           status: false,
-          message: "Gagal mendapatkan gambar dari DeepImg."
+          message: "Failed to get image from DeepImg."
         });
       }
 
@@ -92,7 +92,8 @@ module.exports = function (app) {
     } catch (e) {
       return res.status(500).json({
         status: false,
-        message: "Terjadi kesalahan saat memproses prompt.",
+        message: "An error occurred while processing the prompt.",
+        creator: "Chamod Nimsara",
         error: e?.response?.data || e.message
       });
     }
