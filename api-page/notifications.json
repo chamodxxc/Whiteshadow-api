@@ -1,16 +1,16 @@
 [
-    {
+  {
     "id": "#01",
     "date": "2025-09-29",
-    "title": "Iklan API", 
-    "message": "Nyari API aktif? sung ke fathurweb.qzz.io (masih satu orang yang kerjain btw) lagi aktif-aktifnya loh",
+    "title": "WhiteShadow API Notice",
+    "message": "Looking for active APIs? WhiteShadow API is now online and constantly updated with new endpoints for developers!",
     "read": false
-    },
+  },
   {
     "id": "#02",
     "date": "2025-09-07",
-    "title": "Sistem Rest API", 
-    "message": "Perubahan Design dan perbaikan bug",
+    "title": "System Update",
+    "message": "The API system has been redesigned with improved stability, faster response time, and bug fixes.",
     "read": true
   }
 ]
