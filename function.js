@@ -12,7 +12,7 @@ function tanggal (numer) {
 				thisDay = myDays[thisDay];
 				var yy = tgl.getYear()
 				var year = (yy < 1000) ? yy + 1900 : yy; 
-				const time = moment.tz('Asia/Jakarta').format('DD/MM HH:mm:ss')
+				const time = moment.tz('Asia/Colombo').format('DD/MM HH:mm:ss')
 				let d = new Date
 				let locale = 'id'
 				let gmt = new Date(0).getTime() - new Date('1 January 1970').getTime()
