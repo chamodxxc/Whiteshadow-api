@@ -13,11 +13,9 @@ module.exports = function (app) {
 
     const messages = [
       {
-  "role": "system",
-  "content": "You are Whiteshadow AI, a smart and helpful WhatsApp assistant created by Chamod Nimsara."
-        
-        
-    },
+        role: "system",
+        content: "You are Whiteshadow AI, a smart and helpful WhatsApp assistant created by Chamod Nimsara."
+      },
       {
         role: "user",
         content: text
@@ -29,13 +27,14 @@ module.exports = function (app) {
       link: "writecream.com"
     };
 
-    const url =
-      "https://8pe3nv3qha.execute-api.us-east-1.amazonaws.com/default/llm_chat?" +
-      new URLSearchParams(params);
+    const url = "https://8pe3nv3qha.execute-api.us-east-1.amazonaws.com/default/llm_chat?" + new URLSearchParams(params);
 
     try {
       const { data } = await axios.get(url, {
-        headers: { accept: "*/*" }
+        headers: { 
+          "accept": "*/*",
+          "user-agent": "Mozilla/5.0" // සමහර වෙලාවට user-agent එක නැති වුණාමත් API block වෙන්න පුළුවන්
+        }
       });
 
       res.json({
@@ -53,7 +52,3 @@ module.exports = function (app) {
     }
   });
 };
-
-
-
-
