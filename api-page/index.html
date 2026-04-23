@@ -125,9 +125,151 @@
 </main>
 
 <!-- Original JS (unchanged except branding) -->
-<script>
-    /* All JavaScript from the original file kept same, only branding changed */
-</script>
 
+<script>
+function toggleCategory(index) {
+    const category = document.getElementById(`category-${index}`);
+    const icon = document.getElementById(`category-icon-${index}`);
+    if (category.classList.contains('hidden')) {
+        category.classList.remove('hidden');
+        icon.textContent = 'expand_less';
+    } else {
+        category.classList.add('hidden');
+        icon.textContent = 'expand_more';
+    }
+}
+
+function toggleEndpoint(catIndex, endpointIndex) {
+    const endpoint = document.getElementById(`endpoint-${catIndex}-${endpointIndex}`);
+    const icon = document.getElementById(`endpoint-icon-${catIndex}-${endpointIndex}`);
+    if (endpoint.classList.contains('hidden')) {
+        endpoint.classList.remove('hidden');
+        icon.textContent = 'expand_less';
+    } else {
+        endpoint.classList.add('hidden');
+        icon.textContent = 'expand_more';
+    }
+}
+
+async function executeRequest(event, catIndex, endpointIndex, method, path) {
+    event.preventDefault();
+    const form = document.getElementById(`form-${catIndex}-${endpointIndex}`);
+    const responseDiv = document.getElementById(`response-${catIndex}-${endpointIndex}`);
+    const responseContent = document.getElementById(`response-content-${catIndex}-${endpointIndex}`);
+    const clearButton = document.getElementById(`clear-${catIndex}-${endpointIndex}`);
+
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+
+    for (const [key, value] of formData.entries()) {
+        if (value) params.append(key, value);
+    }
+
+    const fullPath = `${path}?${params.toString()}`;
+    responseDiv.classList.remove('hidden');
+    responseContent.innerHTML = '<div class="loader"></div>';
+
+    try {
+        const response = await fetch(fullPath);
+        const contentType = response.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            responseContent.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        } else {
+            const text = await response.text();
+            responseContent.innerHTML = `<pre>${text}</pre>`;
+        }
+    } catch (error) {
+        responseContent.innerHTML = `<pre>${error}</pre>`;
+    }
+
+    clearButton.classList.remove('hidden');
+}
+
+function clearResponse(catIndex, endpointIndex) {
+    document.getElementById(`response-${catIndex}-${endpointIndex}`).classList.add('hidden');
+    document.getElementById(`response-content-${catIndex}-${endpointIndex}`).innerHTML = '';
+    document.getElementById(`clear-${catIndex}-${endpointIndex}`).classList.add('hidden');
+}
+
+async function loadApis() {
+    const apiList = document.getElementById('apiList');
+
+    try {
+        const res = await fetch('/assets/settings.json');
+        const data = await res.json();
+
+        let html = '';
+
+        data.categories.forEach((cat, i) => {
+            html += `
+            <div class="bg-gray-800 border border-gray-700">
+                <button onclick="toggleCategory(${i})" class="w-full px-4 py-3 flex justify-between">
+                    <span>${cat.name} (${cat.items.length})</span>
+                    <span id="category-icon-${i}">expand_more</span>
+                </button>
+                <div id="category-${i}" class="hidden">
+            `;
+
+            cat.items.forEach((item, j) => {
+                html += `
+                <div class="border-t border-gray-700">
+                    <button onclick="toggleEndpoint(${i}, ${j})" class="w-full px-4 py-2 flex justify-between">
+                        <span>${item.path}</span>
+                        <span id="endpoint-icon-${i}-${j}">expand_more</span>
+                    </button>
+
+                    <div id="endpoint-${i}-${j}" class="hidden p-3">
+                        <form id="form-${i}-${j}" onsubmit="executeRequest(event, ${i}, ${j}, 'GET', '${item.path}')">
+                            <button type="submit" class="bg-indigo-600 px-3 py-1 text-xs">Execute</button>
+                            <button type="button" id="clear-${i}-${j}" onclick="clearResponse(${i}, ${j})" class="hidden ml-2 text-xs">Clear</button>
+                        </form>
+
+                        <div id="response-${i}-${j}" class="hidden mt-2">
+                            <div id="response-content-${i}-${j}"></div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            });
+
+            html += `</div></div>`;
+        });
+
+        apiList.innerHTML = html;
+
+    } catch {
+        apiList.innerHTML = '<p class="text-red-400 text-xs">Failed to load API</p>';
+    }
+}
+
+async function loadNotifications() {
+    const el = document.getElementById('notifications-list');
+
+    try {
+        const res = await fetch('/notifications.json');
+        const data = await res.json();
+
+        el.innerHTML = '';
+
+        data.forEach(n => {
+            el.innerHTML += `
+                <div class="bg-gray-800 p-3 text-xs border border-gray-700">
+                    <b>${n.title}</b><br>${n.message}
+                </div>
+            `;
+        });
+
+    } catch {
+        el.innerHTML = '<p class="text-red-400 text-xs">Failed to load notifications</p>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadApis();
+    loadNotifications();
+});
+        </script>
 </body>
 </html>
